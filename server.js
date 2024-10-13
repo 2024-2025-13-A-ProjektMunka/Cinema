@@ -6,6 +6,11 @@ const mongoDbConnection = require('./middlewares/dbConnection');
 const PORT = process.env.PORT || 3500;
 const app = express();
 
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 mongoDbConnection()
     .then(() => {
         console.log('Sikeres adatbázis csatlakozás!');
@@ -17,3 +22,13 @@ mongoDbConnection()
     .catch((error) => {
         console.log(`Valami hiba történt: ${error}`);
     });
+
+app.use('/api/cinema', require('./routes/mainRoutes'));
+app.use('/api/cinema/filmek', require('./routes/filmekRoutes'));
+app.use('/api/cinema/ujfilm', require('./routes/ujFilmRoutes'));
+app.use('/api/cinema/egyedifilm', require('./routes/egyediFilmRoutes'));
+app.use(
+    '/api/cinema/egyedifilmmodosit',
+    require('./routes/egyediFilmModositRoutes')
+);
+app.use('/api/cinema/foglalasok', require('./routes/foglalasokRoutes'));
